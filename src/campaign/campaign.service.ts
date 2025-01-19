@@ -11,7 +11,6 @@ interface Product {
   name: string;
   price: number;
   imageUrl: string;
-  // Add other relevant fields if necessary
 }
 
 @Injectable()

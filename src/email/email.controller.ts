@@ -7,8 +7,8 @@ export class EmailController {
     @Get('test')
     async email () {
         const options = {
-            email: 'fojiaku9@gmail.com', 
-            name: 'Favour', 
+            email: 'youremail@gmail.com', 
+            name: 'Yourname', 
             code: '3839393', 
             recommendedProducts: ['Products']
         }

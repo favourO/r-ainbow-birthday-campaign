@@ -2,8 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { CampaignService } from './campaign.service';
 
 /**
- * Demo endpoints (optional).
- * In a real system, you might only run this via a Cron or an internal route
+ * For Testing, uses a Cron to schedule
  */
 @Controller('campaign')
 export class CampaignController {
