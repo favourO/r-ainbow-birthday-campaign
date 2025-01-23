@@ -9,7 +9,7 @@ export class SchedulerService {
 
   constructor(private campaignService: CampaignService) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handleBirthdayCheck() {
     await this.campaignService.processUpcomingBirthdays();
   }

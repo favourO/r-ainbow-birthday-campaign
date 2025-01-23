@@ -16,6 +16,10 @@
 
 A detailed explanation for the projects is the PDF file birthdaycampaign.pdf
 
+High Architecture Design Diagram is in the file - design.html
+
+
+
 ## Project setup
 
 ### Prerequisites
