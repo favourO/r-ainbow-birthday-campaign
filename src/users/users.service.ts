@@ -25,8 +25,62 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  async create(dto: { name: string; email: string; birthday: Date }) {
-    return this.prisma.user.create({ data: dto });
+  // async create(dto: { name: string; email: string; birthday: Date }) {
+  //   return this.prisma.user.create({ data: dto });
+  // }
+
+  async createUser(data: CreateUserDto, deviceId: string, ipAddress: string): Promise<User> {
+    // Check if device already has an account
+    const existingDevice = await this.prisma.userDevice.findUnique({
+      where: { deviceId },
+    });
+
+    if (existingDevice) {
+      throw new ForbiddenException('An account has already been created from this device.');
+    }
+
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const attempts = await this.prisma.userRegistrationAttempt.count({
+      where: {
+        ipAddress,
+        createdAt: { gt: oneHourAgo },
+      },
+    });
+
+    if (attempts >= 5) { // Limit to 5 accounts per hour per IP
+      throw new TooManyRequestsException('Too many account creation attempts from this IP. Please try again later.');
+    }
+
+    // Record the registration attempt
+    await this.prisma.userRegistrationAttempt.create({
+      data: { ipAddress },
+    });
+
+    // Proceed with user creation
+    const verificationToken = uuidv4();
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: data.email,
+        name: data.name,
+        password: data.password, 
+        verificationToken,
+      },
+    });
+
+    // Associate device with user
+    await this.prisma.userDevice.create({
+      data: {
+        userId: user.id,
+        deviceId,
+        ipAddress,
+      },
+    });
+
+    // Send verification email
+    await this.emailService.sendVerificationEmail(user.email, verificationToken);
+
+    return user;
   }
 
   /**
